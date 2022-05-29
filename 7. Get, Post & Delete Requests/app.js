@@ -19,6 +19,10 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+app.use((req, res, next) => {
+    res.locals.path = req.path;
+    next();
+});
 
 // routes
 app.get('/', (req, res) =>{
@@ -30,6 +34,10 @@ app.get('/about', (req, res) =>{
 });
 
 // blog routes
+app.get('/blogs/create', (req, res) =>{
+    res.render('create', {title: 'Create New Blog'});
+});
+
 app.get('/blogs', (req, res) =>{
     Blog.find().sort({ createdAt: -1 })
         .then((result) =>{
@@ -75,9 +83,6 @@ app.delete('/blogs/:id', (req, res) =>{
         });
 });
 
-app.get('/blogs/create', (req, res) =>{
-    res.render('create', {title: 'Create New Blog'});
-})
 
 // 404 page
 app.use((req, res) =>{
